@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Counter</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+        }
+
+        .exercise {
+            margin: 2rem auto;
+            padding: 1rem;
+            width: 80%;
+            max-width: 400px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid #333; /* Added border */
+        }
+
+        .exerciseHeader {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            margin: 1rem;
+            cursor: pointer;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        /* Table styles */
+        table {
+            width: 80%;
+            margin: 2rem auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        /* Mobile styles */
+        @media (max-width: 600px) {
+            button {
+                width: 80%;
+                font-size: 1rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .exercise {
+                width: 90%;
+            }
+
+            table {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Exercise Counter</h1>
+    </header>
+    <main>
+        <!-- Push-Ups -->
+        <div class="exercise" id="pushUp">
+            <div class="exerciseHeader">PUSH UPS</div>
+            <button class="incrementButton">+1</button>
+            <button class="decrementButton">-1</button>
+            <p>You have done <span class="count">0</span> push-ups.</p>
+            <p>Total goal: 100 push-ups</p>
+            <p>Remaining push-ups: <span class="remaining">100</span></p>
+        </div>
+        <!-- Lift-Ups -->
+        <div class="exercise" id="liftUp">
+            <div class="exerciseHeader">LIFT UPS</div>
+            <button class="incrementButton">+1</button>
+            <button class="decrementButton">-1</button>
+            <p>You have done <span class="count">0</span> lift-ups.</p>
+            <p>Total goal: 100 lift-ups</p>
+            <p>Remaining lift-ups: <span class="remaining">100</span></p>
+        </div>
+        <!-- Crunch-Ups -->
+        <div class="exercise" id="crunchUp">
+            <div class="exerciseHeader">CRUNCH UPS</div>
+            <button class="incrementButton">+1</button>
+            <button class="decrementButton">-1</button>
+            <p>You have done <span class="count">0</span> crunch-ups.</p>
+            <p>Total goal: 100 crunch-ups</p>
+            <p>Remaining crunch-ups: <span class="remaining">100</span></p>
+        </div>
+        <!-- Dand -->
+        <div class="exercise" id="dand">
+            <div class="exerciseHeader">DAND</div>
+            <button class="incrementButton">+1</button>
+            <button class="decrementButton">-1</button>
+            <p>You have done <span class="count">0</span> dand.</p>
+            <p>Total goal: 100 dand</p>
+            <p>Remaining dand: <span class="remaining">100</span></p>
+        </div>
+        <!-- Running -->
+        <div class="exercise" id="running">
+            <div class="exerciseHeader">RUNNING</div>
+            <button class="incrementButton">+1000 meters</button>
+            <button class="decrementButton">-100 meters</button>
+            <p>You have done <span class="count">0</span> meters running.</p>
+            <p>Total goal: 10,000 meters</p>
+            <p>Remaining meters: <span class="remaining">10000</span></p>
+        </div>
+        <!-- Cobra Stretch -->
+        <div class="exercise" id="cobraStretch">
+            <div class="exerciseHeader">COBRA STRETCH</div>
+            <button class="incrementButton">+1</button>
+            <button class="decrementButton">-1</button>
+            <button class="startTimerButton">Start Timer</button>
+            <button class="stopTimerButton">Stop Timer</button>
+            <p>You have done <span class="count">0</span> Cobra Stretches.</p>
+            <p>Total goal: 10 Cobra Stretches</p>
+            <p>Remaining Cobra Stretches: <span class="remaining">10</span></p>
+            <p>Time remaining: <span class="timer">30</span> seconds</p>
+        </div>
+        <!-- Submit Button -->
+        <button id="submitButton">Submit</button>
+        <!-- Table to display submitted data -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Push-Ups</th>
+                    <th>Lift-Ups</th>
+                    <th>Crunch-Ups</th>
+                    <th>Dand</th>
+                    <th>Running (meters)</th>
+                    <th>Cobra Stretches</th>
+                </tr>
+            </thead>
+            <tbody id="exerciseTableBody">
+                <!-- Table rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </main>
+    <footer>
+        <p>&copy; 2024 Exercise Counter</p>
+    </footer>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Function to initialize an exercise counter
+    function initializeExercise(exerciseId, totalGoal) {
+        const exerciseElement = document.getElementById(exerciseId);
+        let count = parseInt(localStorage.getItem(`${exerciseId}-count`)) || 0;
+        const incrementButton = exerciseElement.querySelector('.incrementButton');
+        const decrementButton = exerciseElement.querySelector('.decrementButton');
+        const countDisplay = exerciseElement.querySelector('.count');
+        const remainingDisplay = exerciseElement.querySelector('.remaining');
+
+        function updateDisplay() {
+            countDisplay.textContent = count;
+            remainingDisplay.textContent = totalGoal - count;
+            localStorage.setItem(`${exerciseId}-count`, count);
+        }
+
+        incrementButton.addEventListener('click', () => {
+            count++;
+            if (count > totalGoal) {
+                count = totalGoal;
+            }
+            updateDisplay();
+        });
+
+        decrementButton.addEventListener('click', () => {
+            count--;
+            if (count < 0) {
+                count = 0;
+            }
+            updateDisplay();
+        });
+
+        updateDisplay();
+
+        return {
+            getCount: () => count
+        };
+    }
+
+    // Initialize all exercises with their respective goals
+    const pushUp = initializeExercise('pushUp', 100);
+    const liftUp = initializeExercise('liftUp', 100);
+    const crunchUp = initializeExercise('crunchUp', 100);
+    const dand = initializeExercise('dand', 100);
+
+    // Running exercise logic
+    const runningExercise = document.getElementById('running');
+    let runningCount = parseInt(localStorage.getItem('running-count')) || 0;
+    const runningTotalGoal = 10000;
+
+    const runningIncrementButton = runningExercise.querySelector('.incrementButton');
+    const runningDecrementButton = runningExercise.querySelector('.decrementButton');
+    const runningCountDisplay = runningExercise.querySelector('.count');
+    const runningRemainingDisplay = runningExercise.querySelector('.remaining');
+
+    function updateRunningDisplay() {
+        runningCountDisplay.textContent = runningCount;
+        runningRemainingDisplay.textContent = runningTotalGoal - runningCount;
+        localStorage.setItem('running-count', runningCount);
+    }
+
+    runningIncrementButton.addEventListener('click', () => {
+        runningCount += 1000;
+        if (runningCount > runningTotalGoal) {
+            runningCount = runningTotalGoal;
+        }
+        updateRunningDisplay();
+    });
+
+    runningDecrementButton.addEventListener('click', () => {
+        runningCount -= 100;
+        if (runningCount < 0) {
+            runningCount = 0;
+        }
+        updateRunningDisplay();
+    });
+
+    updateRunningDisplay();
+
+    // Cobra Stretch exercise logic
+    const cobraStretchExercise = document.getElementById('cobraStretch');
+    let cobraStretchCount = parseInt(localStorage.getItem('cobraStretch-count')) || 0;
+    let cobraStretchTimer;
+    const cobraStretchIncrementButton = cobraStretchExercise.querySelector('.incrementButton');
+    const cobraStretchDecrementButton = cobraStretchExercise.querySelector('.decrementButton');
+    const cobraStretchStartButton = cobraStretchExercise.querySelector('.startTimerButton');
+    const cobraStretchStopButton = cobraStretchExercise.querySelector('.stopTimerButton');
+    const cobraStretchCountDisplay = cobraStretchExercise.querySelector('.count');
+    const cobraStretchRemainingDisplay = cobraStretchExercise.querySelector('.remaining');
+    const cobraStretchTimerDisplay = cobraStretchExercise.querySelector('.timer');
+    const cobraStretchTotalGoal = 10;
+    let cobraStretchDuration = 30; // seconds
+
+    function updateCobraStretchDisplay() {
+        cobraStretchCountDisplay.textContent = cobraStretchCount;
+        cobraStretchRemainingDisplay.textContent = cobraStretchTotalGoal - cobraStretchCount;
+        localStorage.setItem('cobraStretch-count', cobraStretchCount);
+    }
+
+    cobraStretchIncrementButton.addEventListener('click', () => {
+        cobraStretchCount++;
+        if (cobraStretchCount > cobraStretchTotalGoal) {
+            cobraStretchCount = cobraStretchTotalGoal;
+        }
+        updateCobraStretchDisplay();
+    });
+
+    cobraStretchDecrementButton.addEventListener('click', () => {
+        cobraStretchCount--;
+        if (cobraStretchCount < 0) {
+            cobraStretchCount = 0;
+        }
+        updateCobraStretchDisplay();
+    });
+
+    updateCobraStretchDisplay();
+
+    cobraStretchStartButton.addEventListener('click', () => {
+        clearInterval(cobraStretchTimer); // Clear existing timer to prevent multiple timers running simultaneously
+        cobraStretchTimer = setInterval(updateTimer, 1000);
+    });
+
+    cobraStretchStopButton.addEventListener('click', () => {
+        clearInterval(cobraStretchTimer);
+        cobraStretchDuration = 30; // Reset timer duration
+        cobraStretchTimerDisplay.textContent = cobraStretchDuration; // Reset timer display
+    });
+
+    function updateTimer() {
+        cobraStretchDuration--;
+        if (cobraStretchDuration <= 0) {
+            clearInterval(cobraStretchTimer);
+        }
+        cobraStretchTimerDisplay.textContent = cobraStretchDuration;
+    }
+
+    // Load and display saved table data from localStorage
+    const exerciseTableBody = document.getElementById('exerciseTableBody');
+    const savedTableData = JSON.parse(localStorage.getItem('exerciseTableData')) || [];
+    savedTableData.forEach(data => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${data.date}</td>
+            <td>${data.pushUp}</td>
+            <td>${data.liftUp}</td>
+            <td>${data.crunchUp}</td>
+            <td>${data.dand}</td>
+            <td>${data.running}</td>
+            <td>${data.cobraStretch}</td>
+        `;
+        exerciseTableBody.appendChild(row);
+    });
+
+    // Handle submit button click
+    const submitButton = document.getElementById('submitButton');
+    submitButton.addEventListener('click', () => {
+        const date = new Date().toLocaleDateString();
+        const pushUpCount = pushUp.getCount();
+        const liftUpCount = liftUp.getCount();
+        const crunchUpCount = crunchUp.getCount();
+        const dandCount = dand.getCount();
+        const runningMeters = runningCount;
+        const cobraStretches = cobraStretchCount;
+
+        const existingRow = savedTableData.find(data => data.date === date);
+        if (existingRow) {
+            existingRow.pushUp += pushUpCount;
+            existingRow.liftUp += liftUpCount;
+            existingRow.crunchUp += crunchUpCount;
+            existingRow.dand += dandCount;
+            existingRow.running += runningMeters;
+            existingRow.cobraStretch += cobraStretches;
+
+            const rowIndex = savedTableData.indexOf(existingRow);
+            exerciseTableBody.rows[rowIndex].innerHTML = `
+                <td>${existingRow.date}</td>
+                <td>${existingRow.pushUp}</td>
+                <td>${existingRow.liftUp}</td>
+                <td>${existingRow.crunchUp}</td>
+                <td>${existingRow.dand}</td>
+                <td>${existingRow.running}</td>
+                <td>${existingRow.cobraStretch}</td>
+            `;
+        } else {
+            const newRow = {
+                date, pushUp: pushUpCount, liftUp: liftUpCount, crunchUp: crunchUpCount, dand: dandCount, running: runningMeters, cobraStretch: cobraStretches
+            };
+            savedTableData.push(newRow);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${date}</td>
+                <td>${pushUpCount}</td>
+                <td>${liftUpCount}</td>
+                <td>${crunchUpCount}</td>
+                <td>${dandCount}</td>
+                <td>${runningMeters}</td>
+                <td>${cobraStretches}</td>
+            `;
+            exerciseTableBody.appendChild(row);
+        }
+
+        localStorage.setItem('exerciseTableData', JSON.stringify(savedTableData));
+    });
+});
+
+    </script>
+</body>
+</html>
